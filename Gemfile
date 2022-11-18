@@ -71,3 +71,5 @@ end
 
 
 gem "stimulus_reflex", "= 3.5.0.pre8"
+
+gem "inline_svg", "~> 1.8"

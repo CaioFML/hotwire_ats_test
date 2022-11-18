@@ -2,12 +2,17 @@
 (() => {
   var __defProp = Object.defineProperty;
   var __getOwnPropNames = Object.getOwnPropertyNames;
+  var __defNormalProp = (obj, key, value) => key in obj ? __defProp(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
   var __esm = (fn, res) => function __init() {
     return fn && (res = (0, fn[__getOwnPropNames(fn)[0]])(fn = 0)), res;
   };
   var __export = (target, all) => {
     for (var name in all)
       __defProp(target, name, { get: all[name], enumerable: true });
+  };
+  var __publicField = (obj, key, value) => {
+    __defNormalProp(obj, typeof key !== "symbol" ? key + "" : key, value);
+    return value;
   };
 
   // ../../node_modules/@rails/actioncable/src/adapters.js
@@ -9600,6 +9605,49 @@ Please set ${schema_default.reflexSerializeForm}="true" on your Reflex Controlle
   window.Stimulus = application;
   stimulus_reflex_default.initialize(application, { isolate: true });
 
+  // controllers/alert_controller.js
+  var alert_controller_default = class extends Controller2 {
+    initialize() {
+      this.hide();
+    }
+    connect() {
+      setTimeout(() => {
+        this.show();
+      }, 50);
+      setTimeout(() => {
+        this.close();
+      }, this.closeAfterValue);
+    }
+    close() {
+      this.hide();
+      setTimeout(() => {
+        this.element.remove();
+      }, this.removeAfterValue);
+    }
+    show() {
+      this.element.setAttribute(
+        "style",
+        "transition: 0.5s; transform:translate(0, -100px);"
+      );
+    }
+    hide() {
+      this.element.setAttribute(
+        "style",
+        "transition: 1s; transform:translate(0, 200px);"
+      );
+    }
+  };
+  __publicField(alert_controller_default, "values", {
+    closeAfter: {
+      type: Number,
+      default: 2500
+    },
+    removeAfter: {
+      type: Number,
+      default: 1100
+    }
+  });
+
   // controllers/hello_controller.js
   var hello_controller_default = class extends Controller {
     connect() {
@@ -9608,6 +9656,7 @@ Please set ${schema_default.reflexSerializeForm}="true" on your Reflex Controlle
   };
 
   // controllers/index.js
+  application.register("alert", alert_controller_default);
   application.register("hello", hello_controller_default);
 
   // channels/consumer.js

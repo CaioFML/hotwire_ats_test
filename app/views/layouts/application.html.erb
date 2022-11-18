@@ -12,6 +12,18 @@
   </head>
 
   <body>
-    <%= yield %>
+    <div class="flex flex-col h-screen justify-between px-4 md:px-0">
+      <main class="mb-auto w-full">
+        <div class="mx-auto max-w-7xl">
+          <%= yield %>
+        </div>
+      </main>
+    </div>
+
+    <div id="flash-container">
+      <% flash.each do |key, value| %>
+        <%= render "shared/flash", level: key, content: value %>
+      <% end %>
+    </div>
   </body>
 </html>
