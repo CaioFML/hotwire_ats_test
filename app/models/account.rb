@@ -1,3 +1,5 @@
 class Account < ApplicationRecord
-  validate :name, presence: true
+  validates :name, presence: true
+
+  has_many :users, dependent: :destroy
 end
