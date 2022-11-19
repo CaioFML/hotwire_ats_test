@@ -13,7 +13,10 @@ class JobsController < ApplicationController
 
   # GET /jobs/new
   def new
-    @job = Job.new
+    html = render_to_string(partial: 'form', locals: { job: Job.new })
+    render operations: cable_car
+                         .inner_html('#slideover-content', html: html)
+                         .text_content('#slideover-header', text: 'Post a new job')
   end
 
   # GET /jobs/1/edit

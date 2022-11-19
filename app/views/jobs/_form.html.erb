@@ -1,6 +1,6 @@
-<%= form_with(model: job) do |form| %>
+<%= form_with(model: job, html: { class: "space-y-6" }) do |form| %>
   <% if job.errors.any? %>
-    <div style="color: red">
+    <div id="error_explanation">
       <h2><%= pluralize(job.errors.count, "error") %> prohibited this job from being saved:</h2>
 
       <ul>
@@ -11,32 +11,33 @@
     </div>
   <% end %>
 
-  <div>
-    <%= form.label :title, style: "display: block" %>
-    <%= form.text_field :title %>
+  <div class="form-group">
+    <%= form.label :title %>
+    <div class="mt-1">
+      <%= form.text_field :title %>
+    </div>
   </div>
 
-  <div>
-    <%= form.label :status, style: "display: block" %>
-    <%= form.text_field :status %>
+  <div class="form-group">
+    <%= form.rich_text_area :description %>
   </div>
 
-  <div>
-    <%= form.label :job_type, style: "display: block" %>
-    <%= form.text_field :job_type %>
+  <div class="form-group">
+    <%= form.label :status %>
+    <%= form.select :status, options_for_select(Job.statuses.map{|key, _value| [key.humanize, key]}, job.status), {}, { class: "mt-1" } %>
   </div>
 
-  <div>
-    <%= form.label :location, style: "display: block" %>
-    <%= form.text_field :location %>
+  <div class="form-group">
+    <%= form.label :job_type %>
+    <%= form.select :job_type, options_for_select(Job.job_types.map{|key, _value| [key.humanize, key]}, job.job_type), {}, { class: "mt-1" } %>
   </div>
 
-  <div>
-    <%= form.label :account_id, style: "display: block" %>
-    <%= form.text_field :account_id %>
+  <div class="form-group">
+    <%= form.label :location %>
+    <div class="mt-1">
+      <%= form.text_field :location %>
+    </div>
   </div>
 
-  <div>
-    <%= form.submit %>
-  </div>
+  <%= form.submit 'Submit', class: 'btn-primary float-right' %>
 <% end %>
