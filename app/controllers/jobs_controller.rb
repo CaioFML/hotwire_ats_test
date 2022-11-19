@@ -60,11 +60,7 @@ class JobsController < ApplicationController
   # DELETE /jobs/1 or /jobs/1.json
   def destroy
     @job.destroy
-
-    respond_to do |format|
-      format.html { redirect_to jobs_url, notice: "Job was successfully destroyed." }
-      format.json { head :no_content }
-    end
+    render operations: cable_car.remove(selector: dom_id(@job))
   end
 
   private
