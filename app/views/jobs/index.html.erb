@@ -1,14 +1,11 @@
-<p style="color: green"><%= notice %></p>
-
-<h1>Jobs</h1>
-
-<div id="jobs">
-  <% @jobs.each do |job| %>
-    <%= render job %>
-    <p>
-      <%= link_to "Show this job", job %>
-    </p>
-  <% end %>
+<div class="flex items-baseline justify-between mb-6">
+  <h2 class="mt-6 text-3xl font-extrabold text-gray-700">
+    Jobs
+  </h2>
+  <%= link_to "Post a new job", new_job_path, class: "btn-primary-outline" %>
 </div>
-
-<%= link_to "New job", new_job_path %>
+<div class="shadow overflow-hidden sm:rounded-md">
+  <div class="divide-y divide-gray-200">
+    <%= render @jobs %>
+  </div>
+</div>
