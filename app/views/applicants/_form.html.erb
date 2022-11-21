@@ -41,5 +41,10 @@
     <%= form.select :job_id, options_for_select(Job.where(account_id: current_user.account_id).order(:title).pluck(:title, :id)), {}, { class: "mt-1" } %>
   </div>
 
+  <div class="form-group">
+    <%= form.label :resume %>
+    <%= form.file_field :resume, direct_upload: true, accept: "application/pdf" %>
+  </div>
+
   <%= form.submit 'Submit', class: 'btn-primary float-right' %>
 <% end %>

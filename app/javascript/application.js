@@ -13,3 +13,7 @@ mrujs.start({
         new CableCar(CableReady)
     ]
 })
+
+import * as ActiveStorage from "@rails/activestorage"
+
+ActiveStorage.start()
