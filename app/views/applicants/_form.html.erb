@@ -1,6 +1,6 @@
-<%= form_with(model: applicant) do |form| %>
+<%= form_with(model: applicant, id: 'applicant-form', html: { class: "space-y-6" }, data: { remote: true }) do |form| %>
   <% if applicant.errors.any? %>
-    <div style="color: red">
+    <div id="error_explanation">
       <h2><%= pluralize(applicant.errors.count, "error") %> prohibited this applicant from being saved:</h2>
 
       <ul>
@@ -11,42 +11,35 @@
     </div>
   <% end %>
 
-  <div>
-    <%= form.label :first_name, style: "display: block" %>
-    <%= form.text_field :first_name %>
+  <div class="form-group">
+    <%= form.label :first_name %>
+    <%= form.text_field :first_name, class: "mt-1" %>
   </div>
 
-  <div>
-    <%= form.label :last_name, style: "display: block" %>
-    <%= form.text_field :last_name %>
+  <div class="form-group">
+    <%= form.label :last_name %>
+    <%= form.text_field :last_name, class: "mt-1" %>
   </div>
 
-  <div>
-    <%= form.label :email, style: "display: block" %>
-    <%= form.text_field :email %>
+  <div class="form-group">
+    <%= form.label :email %>
+    <%= form.text_field :email, class: "mt-1" %>
   </div>
 
-  <div>
-    <%= form.label :phone, style: "display: block" %>
-    <%= form.text_field :phone %>
+  <div class="form-group">
+    <%= form.label :phone %>
+    <%= form.text_field :phone, class: "mt-1" %>
   </div>
 
-  <div>
-    <%= form.label :stage, style: "display: block" %>
-    <%= form.text_field :stage %>
+  <div class="form-group">
+    <%= form.label :stage %>
+    <%= form.select :stage, options_for_select(Applicant.stages.map{ |key, _value| [key.humanize, key]}, applicant.stage), {}, { class: "mt-1" } %>
   </div>
 
-  <div>
-    <%= form.label :status, style: "display: block" %>
-    <%= form.text_field :status %>
+  <div class="form-group">
+    <%= form.label :job_id %>
+    <%= form.select :job_id, options_for_select(Job.where(account_id: current_user.account_id).order(:title).pluck(:title, :id)), {}, { class: "mt-1" } %>
   </div>
 
-  <div>
-    <%= form.label :job_id, style: "display: block" %>
-    <%= form.text_field :job_id %>
-  </div>
-
-  <div>
-    <%= form.submit %>
-  </div>
+  <%= form.submit 'Submit', class: 'btn-primary float-right' %>
 <% end %>
