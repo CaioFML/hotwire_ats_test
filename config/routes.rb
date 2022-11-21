@@ -1,4 +1,5 @@
 Rails.application.routes.draw do
+  resources :applicants
   resources :jobs
   devise_for :users,
              path: '',
