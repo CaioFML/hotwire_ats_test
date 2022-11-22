@@ -1,5 +1,5 @@
 class ApplicantsController < ApplicationController
-  before_action :set_applicant, only: %i[ show edit update destroy ]
+  before_action :set_applicant, only: %i[ show edit update destroy change_stage ]
   before_action :authenticate_user!
 
   # GET /applicants or /applicants.json
@@ -58,6 +58,11 @@ class ApplicantsController < ApplicationController
       format.html { redirect_to applicants_url, notice: "Applicant was successfully destroyed." }
       format.json { head :no_content }
     end
+  end
+
+  def change_stage
+    @applicant.update(applicant_params)
+    head :ok
   end
 
   private
