@@ -4,8 +4,19 @@ class ApplicantsController < ApplicationController
 
   # GET /applicants or /applicants.json
   def index
-    @applicants = Applicant.all
+    if search_params.present?
+      @applicants = Applicant.includes(:job)
+      @applicants = @applicants.where(job_id: search_params[:job]) if search_params[:job].present?
+      @applicants = @applicants.where('first_name ILIKE ? OR last_name ILIKE ?', "%#{search_params[:query]}%", "%#{search_params[:query]}%") if search_params[:query].present?
+      if search_params[:sort].present?
+        sort = search_params[:sort].split('-')
+        @applicants = @applicants.order("#{sort[0]} #{sort[1]}")
+      end
+    else
+      @applicants = Applicant.includes(:job).all
+    end
   end
+
 
   # GET /applicants/1 or /applicants/1.json
   def show
@@ -74,5 +85,9 @@ class ApplicantsController < ApplicationController
     # Only allow a list of trusted parameters through.
   def applicant_params
     params.require(:applicant).permit(:first_name, :last_name, :email, :phone, :stage, :status, :job_id, :resume)
+  end
+
+  def search_params
+    params.permit(:query, :job, :sort)
   end
 end
