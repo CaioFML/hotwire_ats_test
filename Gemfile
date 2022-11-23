@@ -73,3 +73,5 @@ end
 gem "stimulus_reflex", "= 3.5.0.pre8"
 
 gem "inline_svg", "~> 1.8"
+
+gem "pg_search", "~> 2.3"

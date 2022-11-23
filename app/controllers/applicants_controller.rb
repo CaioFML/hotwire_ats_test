@@ -7,7 +7,7 @@ class ApplicantsController < ApplicationController
     if search_params.present?
       @applicants = Applicant.includes(:job)
       @applicants = @applicants.where(job_id: search_params[:job]) if search_params[:job].present?
-      @applicants = @applicants.where('first_name ILIKE ? OR last_name ILIKE ?', "%#{search_params[:query]}%", "%#{search_params[:query]}%") if search_params[:query].present?
+      @applicants = @applicants.text_search(search_params[:query]) if search_params[:query].present?
       if search_params[:sort].present?
         sort = search_params[:sort].split('-')
         @applicants = @applicants.order("#{sort[0]} #{sort[1]}")
