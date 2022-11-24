@@ -11858,6 +11858,12 @@ Please set ${schema_default.reflexSerializeForm}="true" on your Reflex Controlle
     attribute: String
   });
 
+  // controllers/form_controller.js
+  var form_controller_default = class extends Controller {
+    connect() {
+    }
+  };
+
   // controllers/hello_controller.js
   var hello_controller_default = class extends Controller {
     connect() {
@@ -11910,6 +11916,7 @@ Please set ${schema_default.reflexSerializeForm}="true" on your Reflex Controlle
   // controllers/index.js
   application.register("alert", alert_controller_default);
   application.register("drag", drag_controller_default);
+  application.register("form", form_controller_default);
   application.register("hello", hello_controller_default);
   application.register("slideover", slideover_controller_default);
 
