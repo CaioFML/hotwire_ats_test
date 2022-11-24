@@ -113,6 +113,9 @@ GEM
       activesupport (>= 5.0.0)
     jsbundling-rails (1.0.3)
       railties (>= 6.0.0)
+    kredis (1.3.0)
+      activesupport (>= 6.0.0)
+      redis (>= 4.2, < 6)
     loofah (2.19.0)
       crass (~> 1.0.2)
       nokogiri (>= 1.5.9)
@@ -231,6 +234,7 @@ DEPENDENCIES
   inline_svg (~> 1.8)
   jbuilder
   jsbundling-rails
+  kredis
   pg (~> 1.1)
   pg_search (~> 2.3)
   puma (~> 5.0)
