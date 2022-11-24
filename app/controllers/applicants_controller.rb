@@ -1,4 +1,4 @@
-class ApplicantsControllerf < ApplicationController
+class ApplicantsController < ApplicationController
   before_action :set_applicant, only: %i[ show edit update destroy change_stage ]
   before_action :authenticate_user!, :turbo_frame_request_variant
 
