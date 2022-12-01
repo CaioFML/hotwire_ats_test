@@ -20,5 +20,12 @@
       <!-- Applicant actions go here -->
     </div>
   </div>
-  <!-- Resume goes here -->
+
+  <% if @applicant.resume.attached? %>
+    <%= turbo_frame_tag "resume", src: applicant_resume_path(@applicant), loading: "lazy" do %>
+      <div class="w-full bg-gray-100 rounded flex justify-center items-center h-[1000px]">
+        Loading...
+      </div>
+    <% end %>
+  <% end %>
 </div>

@@ -1,4 +1,5 @@
 Rails.application.routes.draw do
+  get 'resumes/show'
   resources :applicants
   resources :jobs
   devise_for :users,
@@ -27,5 +28,6 @@ Rails.application.routes.draw do
 
   resources :applicants do
     patch :change_stage, on: :member
+    get :resume, action: :show, controller: 'resumes'
   end
 end
