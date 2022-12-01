@@ -2,7 +2,13 @@
   <h2 class="mt-6 text-3xl font-extrabold">
     <%= @applicant.name %>
   </h2>
-  <%= link_to "Send email", "#", class: "btn-primary-outline", data: { action: "click->slideover#open", remote: true } %>
+  <%= link_to "Send email",
+              new_applicant_email_path(@applicant),
+              class: "btn-primary-outline",
+              data: {
+                action: "click->slideover#open",
+                remote: true
+              } %>
 </div>
 <div class="shadow p-4 text-gray-700">
   <div class="flex justify-between mb-6">
