@@ -5,4 +5,10 @@ class Email < ApplicationRecord
   belongs_to :user
 
   validates_presence_of :subject
+
+  after_create_commit :send_email
+
+  def send_email
+    ApplicantMailer.contact(email: self).deliver_later
+  end
 end
