@@ -6,7 +6,12 @@ class Email < ApplicationRecord
 
   validates_presence_of :subject
 
-  after_create_commit :send_email
+  after_create_commit :send_email, if: :outbound?
+
+  enum email_type: {
+    outbound: 'outbound',
+    inbound: 'inbound'
+  }
 
   def send_email
     ApplicantMailer.contact(email: self).deliver_later

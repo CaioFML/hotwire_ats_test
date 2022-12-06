@@ -12,6 +12,7 @@ class EmailsController < ApplicationController
 
   def create
     @email = Email.new(email_params)
+    @email.email_type = 'outbound'
 
     @email.applicant = @applicant
     @email.user = current_user

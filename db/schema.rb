@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2022_12_01_011653) do
+ActiveRecord::Schema[7.0].define(version: 2022_12_06_020554) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pgcrypto"
   enable_extension "plpgsql"
@@ -19,6 +19,15 @@ ActiveRecord::Schema[7.0].define(version: 2022_12_01_011653) do
     t.string "name"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+  end
+
+  create_table "action_mailbox_inbound_emails", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+    t.integer "status", default: 0, null: false
+    t.string "message_id", null: false
+    t.string "message_checksum", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["message_id", "message_checksum"], name: "index_action_mailbox_inbound_emails_uniqueness", unique: true
   end
 
   create_table "action_text_rich_texts", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
@@ -82,6 +91,7 @@ ActiveRecord::Schema[7.0].define(version: 2022_12_01_011653) do
     t.datetime "sent_at"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.string "email_type"
     t.index ["applicant_id"], name: "index_emails_on_applicant_id"
     t.index ["user_id"], name: "index_emails_on_user_id"
   end
@@ -110,8 +120,10 @@ ActiveRecord::Schema[7.0].define(version: 2022_12_01_011653) do
     t.string "last_name"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.string "email_alias"
     t.index ["account_id"], name: "index_users_on_account_id"
     t.index ["email"], name: "index_users_on_email", unique: true
+    t.index ["email_alias"], name: "index_users_on_email_alias"
     t.index ["reset_password_token"], name: "index_users_on_reset_password_token", unique: true
   end
 
