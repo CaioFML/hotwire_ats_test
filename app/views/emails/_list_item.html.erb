@@ -1,5 +1,5 @@
 <div>
-  <%= link_to applicant_email_path(@applicant, email), data: { action: "click->slideover#open", remote: true } do %>
+  <%= link_to applicant_email_path(applicant, email), data: { action: "click->slideover#open", remote: true } do %>
     <div class="p-2 hover:bg-blue-200 cursor-pointer flex items-center">
       <div class="mr-2 text-gray-500">
         <%= inline_svg_tag(email_type_icon(email.email_type), class: "h-6 w-6 inline-block") %>

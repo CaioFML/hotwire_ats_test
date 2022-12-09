@@ -7,6 +7,7 @@ class Email < ApplicationRecord
   validates_presence_of :subject
 
   after_create_commit :send_email, if: :outbound?
+  after_create_commit :broadcast_to_applicant
 
   enum email_type: {
     outbound: 'outbound',
@@ -30,5 +31,18 @@ class Email < ApplicationRecord
     HTML
     email.body = original_body.prepend(reply_intro)
     email
+  end
+
+  def broadcast_to_applicant
+    broadcast_prepend_later_to(
+      applicant,
+      :emails,
+      target: 'emails-list',
+      partial: 'emails/list_item',
+      locals: {
+        email: self,
+        applicant: applicant
+      }
+    )
   end
 end
