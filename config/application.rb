@@ -33,5 +33,7 @@ module HotwireAtsTest
 
     # Don't generate system test files.
     config.generators.system_tests = nil
+    config.active_record.yaml_column_permitted_classes = [Symbol, Hash, Array, ActiveSupport::HashWithIndifferentAccess]
+    config.active_record.use_yaml_unsafe_load = true
   end
 end
