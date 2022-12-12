@@ -304,11 +304,11 @@
       };
       Connection.reopenDelay = 500;
       Connection.prototype.events = {
-        message(event) {
+        message(event2) {
           if (!this.isProtocolSupported()) {
             return;
           }
-          const { identifier, message, reason, reconnect, type } = JSON.parse(event.data);
+          const { identifier, message, reason, reconnect, type } = JSON.parse(event2.data);
           switch (type) {
             case message_types.welcome:
               this.monitor.recordConnect();
@@ -335,7 +335,7 @@
             return this.close({ allowReconnect: false });
           }
         },
-        close(event) {
+        close(event2) {
           logger_default.log("WebSocket onclose event");
           if (this.disconnected) {
             return;
@@ -931,8 +931,8 @@
     const candidate = element ? element.closest("input, button") : null;
     return (candidate === null || candidate === void 0 ? void 0 : candidate.type) == "submit" ? candidate : null;
   }
-  function clickCaptured(event) {
-    const submitter = findSubmitterFromClickTarget(event.target);
+  function clickCaptured(event2) {
+    const submitter = findSubmitterFromClickTarget(event2.target);
     if (submitter && submitter.form) {
       submittersByForm.set(submitter.form, submitter);
     }
@@ -1174,17 +1174,17 @@
     return template2.content;
   }
   function dispatch(eventName, { target, cancelable, detail } = {}) {
-    const event = new CustomEvent(eventName, {
+    const event2 = new CustomEvent(eventName, {
       cancelable,
       bubbles: true,
       detail
     });
     if (target && target.isConnected) {
-      target.dispatchEvent(event);
+      target.dispatchEvent(event2);
     } else {
-      document.documentElement.dispatchEvent(event);
+      document.documentElement.dispatchEvent(event2);
     }
-    return event;
+    return event2;
   }
   function nextAnimationFrame() {
     return new Promise((resolve) => requestAnimationFrame(() => resolve()));
@@ -1359,12 +1359,12 @@
     }
     async receive(response) {
       const fetchResponse = new FetchResponse(response);
-      const event = dispatch("turbo:before-fetch-response", {
+      const event2 = dispatch("turbo:before-fetch-response", {
         cancelable: true,
         detail: { fetchResponse },
         target: this.target
       });
-      if (event.defaultPrevented) {
+      if (event2.defaultPrevented) {
         this.delegate.requestPreventedHandlingResponse(this, fetchResponse);
       } else if (fetchResponse.succeeded) {
         this.delegate.requestSucceededWithResponse(this, fetchResponse);
@@ -1401,7 +1401,7 @@
     }
     async allowRequestToBeIntercepted(fetchOptions) {
       const requestInterception = new Promise((resolve) => this.resolveRequestPromise = resolve);
-      const event = dispatch("turbo:before-fetch-request", {
+      const event2 = dispatch("turbo:before-fetch-request", {
         cancelable: true,
         detail: {
           fetchOptions,
@@ -1410,16 +1410,16 @@
         },
         target: this.target
       });
-      if (event.defaultPrevented)
+      if (event2.defaultPrevented)
         await requestInterception;
     }
     willDelegateErrorHandling(error4) {
-      const event = dispatch("turbo:fetch-request-error", {
+      const event2 = dispatch("turbo:fetch-request-error", {
         target: this.target,
         cancelable: true,
         detail: { request: this, error: error4 }
       });
-      return !event.defaultPrevented;
+      return !event2.defaultPrevented;
     }
   };
   var AppearanceObserver = class {
@@ -1721,13 +1721,13 @@
         this.eventTarget.removeEventListener("submit", this.submitBubbled, false);
         this.eventTarget.addEventListener("submit", this.submitBubbled, false);
       };
-      this.submitBubbled = (event) => {
-        if (!event.defaultPrevented) {
-          const form2 = event.target instanceof HTMLFormElement ? event.target : void 0;
-          const submitter = event.submitter || void 0;
+      this.submitBubbled = (event2) => {
+        if (!event2.defaultPrevented) {
+          const form2 = event2.target instanceof HTMLFormElement ? event2.target : void 0;
+          const submitter = event2.submitter || void 0;
           if (form2 && submissionDoesNotDismissDialog(form2, submitter) && submissionDoesNotTargetIFrame(form2, submitter) && this.delegate.willSubmitForm(form2, submitter)) {
-            event.preventDefault();
-            event.stopImmediatePropagation();
+            event2.preventDefault();
+            event2.stopImmediatePropagation();
             this.delegate.formSubmitted(form2, submitter);
           }
         }
@@ -1860,19 +1860,19 @@
   };
   var LinkInterceptor = class {
     constructor(delegate2, element) {
-      this.clickBubbled = (event) => {
-        if (this.respondsToEventTarget(event.target)) {
-          this.clickEvent = event;
+      this.clickBubbled = (event2) => {
+        if (this.respondsToEventTarget(event2.target)) {
+          this.clickEvent = event2;
         } else {
           delete this.clickEvent;
         }
       };
-      this.linkClicked = (event) => {
-        if (this.clickEvent && this.respondsToEventTarget(event.target) && event.target instanceof Element) {
-          if (this.delegate.shouldInterceptLinkClick(event.target, event.detail.url, event.detail.originalEvent)) {
+      this.linkClicked = (event2) => {
+        if (this.clickEvent && this.respondsToEventTarget(event2.target) && event2.target instanceof Element) {
+          if (this.delegate.shouldInterceptLinkClick(event2.target, event2.detail.url, event2.detail.originalEvent)) {
             this.clickEvent.preventDefault();
-            event.preventDefault();
-            this.delegate.linkClickIntercepted(event.target, event.detail.url, event.detail.originalEvent);
+            event2.preventDefault();
+            this.delegate.linkClickIntercepted(event2.target, event2.detail.url, event2.detail.originalEvent);
           }
         }
         delete this.clickEvent;
@@ -1905,14 +1905,14 @@
         this.eventTarget.removeEventListener("click", this.clickBubbled, false);
         this.eventTarget.addEventListener("click", this.clickBubbled, false);
       };
-      this.clickBubbled = (event) => {
-        if (event instanceof MouseEvent && this.clickEventIsSignificant(event)) {
-          const target = event.composedPath && event.composedPath()[0] || event.target;
+      this.clickBubbled = (event2) => {
+        if (event2 instanceof MouseEvent && this.clickEventIsSignificant(event2)) {
+          const target = event2.composedPath && event2.composedPath()[0] || event2.target;
           const link2 = this.findLinkFromClickTarget(target);
           if (link2 && doesNotTargetIFrame(link2)) {
             const location2 = this.getLocationForLink(link2);
-            if (this.delegate.willFollowLinkToLocation(link2, location2, event)) {
-              event.preventDefault();
+            if (this.delegate.willFollowLinkToLocation(link2, location2, event2)) {
+              event2.preventDefault();
               this.delegate.followedLinkToLocation(link2, location2);
             }
           }
@@ -1933,8 +1933,8 @@
         this.started = false;
       }
     }
-    clickEventIsSignificant(event) {
-      return !(event.target && event.target.isContentEditable || event.defaultPrevented || event.which > 1 || event.altKey || event.ctrlKey || event.metaKey || event.shiftKey);
+    clickEventIsSignificant(event2) {
+      return !(event2.target && event2.target.isContentEditable || event2.defaultPrevented || event2.which > 1 || event2.altKey || event2.ctrlKey || event2.metaKey || event2.shiftKey);
     }
     findLinkFromClickTarget(target) {
       if (target instanceof Element) {
@@ -2903,10 +2903,10 @@
     shouldInterceptLinkClick(element, _location, _event) {
       return this.shouldRedirect(element);
     }
-    linkClickIntercepted(element, url2, event) {
+    linkClickIntercepted(element, url2, event2) {
       const frame = this.findFrameElement(element);
       if (frame) {
-        frame.delegate.linkClickIntercepted(element, url2, event);
+        frame.delegate.linkClickIntercepted(element, url2, event2);
       }
     }
     willSubmitForm(element, submitter) {
@@ -2950,9 +2950,9 @@
       this.restorationData = {};
       this.started = false;
       this.pageLoaded = false;
-      this.onPopState = (event) => {
+      this.onPopState = (event2) => {
         if (this.shouldHandlePopState()) {
-          const { turbo } = event.state || {};
+          const { turbo } = event2.state || {};
           if (turbo) {
             this.location = new URL(window.location.href);
             const { restorationIdentifier } = turbo;
@@ -3247,16 +3247,16 @@
     constructor(delegate2) {
       this.sources = /* @__PURE__ */ new Set();
       this.started = false;
-      this.inspectFetchResponse = (event) => {
-        const response = fetchResponseFromEvent(event);
+      this.inspectFetchResponse = (event2) => {
+        const response = fetchResponseFromEvent(event2);
         if (response && fetchResponseIsStream(response)) {
-          event.preventDefault();
+          event2.preventDefault();
           this.receiveMessageResponse(response);
         }
       };
-      this.receiveMessageEvent = (event) => {
-        if (this.started && typeof event.data == "string") {
-          this.receiveMessageHTML(event.data);
+      this.receiveMessageEvent = (event2) => {
+        if (this.started && typeof event2.data == "string") {
+          this.receiveMessageHTML(event2.data);
         }
       };
       this.delegate = delegate2;
@@ -3298,9 +3298,9 @@
       this.delegate.receivedMessageFromStream(StreamMessage.wrap(html));
     }
   };
-  function fetchResponseFromEvent(event) {
+  function fetchResponseFromEvent(event2) {
     var _a2;
-    const fetchResponse = (_a2 = event.detail) === null || _a2 === void 0 ? void 0 : _a2.fetchResponse;
+    const fetchResponse = (_a2 = event2.detail) === null || _a2 === void 0 ? void 0 : _a2.fetchResponse;
     if (fetchResponse instanceof FetchResponse) {
       return fetchResponse;
     }
@@ -3686,8 +3686,8 @@
     }
     submittedFormLinkToLocation() {
     }
-    willFollowLinkToLocation(link2, location2, event) {
-      return this.elementIsNavigatable(link2) && locationIsVisitable(location2, this.snapshot.rootLocation) && this.applicationAllowsFollowingLinkToLocation(link2, location2, event);
+    willFollowLinkToLocation(link2, location2, event2) {
+      return this.elementIsNavigatable(link2) && locationIsVisitable(location2, this.snapshot.rootLocation) && this.applicationAllowsFollowingLinkToLocation(link2, location2, event2);
     }
     followedLinkToLocation(link2, location2) {
       const action = this.getActionForLink(link2);
@@ -3747,8 +3747,8 @@
       }
     }
     allowsImmediateRender({ element }, options) {
-      const event = this.notifyApplicationBeforeRender(element, options);
-      const { defaultPrevented, detail: { render } } = event;
+      const event2 = this.notifyApplicationBeforeRender(element, options);
+      const { defaultPrevented, detail: { render } } = event2;
       if (this.view.renderer && render) {
         this.view.renderer.renderElement = render;
       }
@@ -3771,17 +3771,17 @@
       this.notifyApplicationAfterFrameRender(fetchResponse, frame);
     }
     applicationAllowsFollowingLinkToLocation(link2, location2, ev) {
-      const event = this.notifyApplicationAfterClickingLinkToLocation(link2, location2, ev);
-      return !event.defaultPrevented;
+      const event2 = this.notifyApplicationAfterClickingLinkToLocation(link2, location2, ev);
+      return !event2.defaultPrevented;
     }
     applicationAllowsVisitingLocation(location2) {
-      const event = this.notifyApplicationBeforeVisitingLocation(location2);
-      return !event.defaultPrevented;
+      const event2 = this.notifyApplicationBeforeVisitingLocation(location2);
+      return !event2.defaultPrevented;
     }
-    notifyApplicationAfterClickingLinkToLocation(link2, location2, event) {
+    notifyApplicationAfterClickingLinkToLocation(link2, location2, event2) {
       return dispatch("turbo:click", {
         target: link2,
-        detail: { url: location2.href, originalEvent: event },
+        detail: { url: location2.href, originalEvent: event2 },
         cancelable: true
       });
     }
@@ -4181,12 +4181,12 @@
       clearBusyState(formElement, this.findFrameElement(formElement));
     }
     allowsImmediateRender({ element: newFrame }, options) {
-      const event = dispatch("turbo:before-frame-render", {
+      const event2 = dispatch("turbo:before-frame-render", {
         target: this.element,
         detail: Object.assign({ newFrame }, options),
         cancelable: true
       });
-      const { defaultPrevented, detail: { render } } = event;
+      const { defaultPrevented, detail: { render } } = event2;
       if (this.view.renderer && render) {
         this.view.renderer.renderElement = render;
       }
@@ -4265,12 +4265,12 @@
           session.visit(url2, options);
         }
       };
-      const event = dispatch("turbo:frame-missing", {
+      const event2 = dispatch("turbo:frame-missing", {
         target: this.element,
         detail: { response, visit: visit2 },
         cancelable: true
       });
-      return !event.defaultPrevented;
+      return !event2.defaultPrevented;
     }
     async visitResponse(response) {
       const wrapped = new FetchResponse(response);
@@ -4425,10 +4425,10 @@
     async render() {
       var _a2;
       return (_a2 = this.renderPromise) !== null && _a2 !== void 0 ? _a2 : this.renderPromise = (async () => {
-        const event = this.beforeRenderEvent;
-        if (this.dispatchEvent(event)) {
+        const event2 = this.beforeRenderEvent;
+        if (this.dispatchEvent(event2)) {
           await nextAnimationFrame();
-          await event.detail.render(this);
+          await event2.detail.render(this);
         }
       })();
     }
@@ -4621,8 +4621,8 @@
         this.subscription.unsubscribe();
     }
     dispatchMessageEvent(data2) {
-      const event = new MessageEvent("message", { data: data2 });
-      return this.dispatchEvent(event);
+      const event2 = new MessageEvent("message", { data: data2 });
+      return this.dispatchEvent(event2);
     }
     get channel() {
       const channel = this.getAttribute("channel");
@@ -4633,9 +4633,9 @@
   customElements.define("turbo-cable-stream-source", TurboCableStreamSourceElement);
 
   // ../../node_modules/@hotwired/turbo-rails/app/javascript/turbo/fetch_requests.js
-  function encodeMethodIntoRequestBody(event) {
-    if (event.target instanceof HTMLFormElement) {
-      const { target: form2, detail: { fetchOptions } } = event;
+  function encodeMethodIntoRequestBody(event2) {
+    if (event2.target instanceof HTMLFormElement) {
+      const { target: form2, detail: { fetchOptions } } = event2;
       form2.addEventListener("turbo:submit-start", ({ detail: { formSubmission: { submitter } } }) => {
         const method2 = submitter && submitter.formMethod || fetchOptions.body && fetchOptions.body.get("_method") || form2.getAttribute("method");
         if (!/get/i.test(method2)) {
@@ -4673,8 +4673,8 @@
     bindingDisconnected(binding) {
       this.unorderedBindings.delete(binding);
     }
-    handleEvent(event) {
-      const extendedEvent = extendEvent(event);
+    handleEvent(event2) {
+      const extendedEvent = extendEvent(event2);
       for (const binding of this.bindings) {
         if (extendedEvent.immediatePropagationStopped) {
           break;
@@ -4693,12 +4693,12 @@
       });
     }
   };
-  function extendEvent(event) {
-    if ("immediatePropagationStopped" in event) {
-      return event;
+  function extendEvent(event2) {
+    if ("immediatePropagationStopped" in event2) {
+      return event2;
     } else {
-      const { stopImmediatePropagation } = event;
-      return Object.assign(event, {
+      const { stopImmediatePropagation } = event2;
+      return Object.assign(event2, {
         immediatePropagationStopped: false,
         stopImmediatePropagation() {
           this.immediatePropagationStopped = true;
@@ -4792,19 +4792,19 @@
     }
   };
   var defaultActionDescriptorFilters = {
-    stop({ event, value }) {
+    stop({ event: event2, value }) {
       if (value)
-        event.stopPropagation();
+        event2.stopPropagation();
       return true;
     },
-    prevent({ event, value }) {
+    prevent({ event: event2, value }) {
       if (value)
-        event.preventDefault();
+        event2.preventDefault();
       return true;
     },
-    self({ event, value, element }) {
+    self({ event: event2, value, element }) {
       if (value) {
-        return element === event.target;
+        return element === event2.target;
       } else {
         return true;
       }
@@ -4926,9 +4926,9 @@
     get identifier() {
       return this.context.identifier;
     }
-    handleEvent(event) {
-      if (this.willBeInvokedByEvent(event) && this.applyEventModifiers(event)) {
-        this.invokeWithEvent(event);
+    handleEvent(event2) {
+      if (this.willBeInvokedByEvent(event2) && this.applyEventModifiers(event2)) {
+        this.invokeWithEvent(event2);
       }
     }
     get eventName() {
@@ -4941,35 +4941,35 @@
       }
       throw new Error(`Action "${this.action}" references undefined method "${this.methodName}"`);
     }
-    applyEventModifiers(event) {
+    applyEventModifiers(event2) {
       const { element } = this.action;
       const { actionDescriptorFilters } = this.context.application;
       let passes = true;
       for (const [name, value] of Object.entries(this.eventOptions)) {
         if (name in actionDescriptorFilters) {
           const filter = actionDescriptorFilters[name];
-          passes = passes && filter({ name, value, event, element });
+          passes = passes && filter({ name, value, event: event2, element });
         } else {
           continue;
         }
       }
       return passes;
     }
-    invokeWithEvent(event) {
-      const { target, currentTarget } = event;
+    invokeWithEvent(event2) {
+      const { target, currentTarget } = event2;
       try {
         const { params: params2 } = this.action;
-        const actionEvent = Object.assign(event, { params: params2 });
+        const actionEvent = Object.assign(event2, { params: params2 });
         this.method.call(this.controller, actionEvent);
-        this.context.logDebugActivity(this.methodName, { event, target, currentTarget, action: this.methodName });
+        this.context.logDebugActivity(this.methodName, { event: event2, target, currentTarget, action: this.methodName });
       } catch (error4) {
         const { identifier, controller, element, index: index2 } = this;
-        const detail = { identifier, controller, element, index: index2, event };
+        const detail = { identifier, controller, element, index: index2, event: event2 };
         this.context.handleError(error4, `invoking action "${this.action}"`, detail);
       }
     }
-    willBeInvokedByEvent(event) {
-      const eventTarget = event.target;
+    willBeInvokedByEvent(event2) {
+      const eventTarget = event2.target;
       if (this.element === eventTarget) {
         return true;
       } else if (eventTarget instanceof Element && this.element.contains(eventTarget)) {
@@ -6575,9 +6575,9 @@
     }
     dispatch(eventName, { target = this.element, detail = {}, prefix: prefix2 = this.identifier, bubbles = true, cancelable = true } = {}) {
       const type = prefix2 ? `${prefix2}:${eventName}` : eventName;
-      const event = new CustomEvent(type, { detail, bubbles, cancelable });
-      target.dispatchEvent(event);
-      return event;
+      const event2 = new CustomEvent(type, { detail, bubbles, cancelable });
+      target.dispatchEvent(event2);
+      return event2;
     }
   };
   Controller.blessings = [ClassPropertiesBlessing, TargetPropertiesBlessing, ValuePropertiesBlessing];
@@ -6934,9 +6934,9 @@
     }
     dispatch(eventName, { target = this.element, detail = {}, prefix: prefix2 = this.identifier, bubbles = true, cancelable = true } = {}) {
       const type = prefix2 ? `${prefix2}:${eventName}` : eventName;
-      const event = new CustomEvent(type, { detail, bubbles, cancelable });
-      target.dispatchEvent(event);
-      return event;
+      const event2 = new CustomEvent(type, { detail, bubbles, cancelable });
+      target.dispatchEvent(event2);
+      return event2;
     }
   };
   Controller2.blessings = [ClassPropertiesBlessing2, TargetPropertiesBlessing2, ValuePropertiesBlessing2];
@@ -6994,16 +6994,16 @@
     const match = reflexString.match(/(?:.*->)?(.*?)(?:Reflex)?#/);
     return match ? match[1] : "";
   };
-  var emitEvent = (event, detail) => {
+  var emitEvent = (event2, detail) => {
     document.dispatchEvent(
-      new CustomEvent(event, {
+      new CustomEvent(event2, {
         bubbles: true,
         cancelable: false,
         detail
       })
     );
     if (window.jQuery)
-      window.jQuery(document).trigger(event, detail);
+      window.jQuery(document).trigger(event2, detail);
   };
   var elementToXPath = (element) => {
     if (element.id !== "")
@@ -8777,98 +8777,98 @@
   };
   document.addEventListener(
     "stimulus-reflex:before",
-    (event) => invokeLifecycleMethod(
+    (event2) => invokeLifecycleMethod(
       "before",
-      event.detail.element,
-      event.detail.controller.element,
-      event.detail.reflexId,
-      event.detail.payload
+      event2.detail.element,
+      event2.detail.controller.element,
+      event2.detail.reflexId,
+      event2.detail.payload
     ),
     true
   );
   document.addEventListener(
     "stimulus-reflex:success",
-    (event) => {
+    (event2) => {
       invokeLifecycleMethod(
         "success",
-        event.detail.element,
-        event.detail.controller.element,
-        event.detail.reflexId,
-        event.detail.payload
+        event2.detail.element,
+        event2.detail.controller.element,
+        event2.detail.reflexId,
+        event2.detail.payload
       );
       dispatchLifecycleEvent(
         "after",
-        event.detail.element,
-        event.detail.controller.element,
-        event.detail.reflexId,
-        event.detail.payload
+        event2.detail.element,
+        event2.detail.controller.element,
+        event2.detail.reflexId,
+        event2.detail.payload
       );
     },
     true
   );
   document.addEventListener(
     "stimulus-reflex:nothing",
-    (event) => {
+    (event2) => {
       dispatchLifecycleEvent(
         "success",
-        event.detail.element,
-        event.detail.controller.element,
-        event.detail.reflexId,
-        event.detail.payload
+        event2.detail.element,
+        event2.detail.controller.element,
+        event2.detail.reflexId,
+        event2.detail.payload
       );
     },
     true
   );
   document.addEventListener(
     "stimulus-reflex:error",
-    (event) => {
+    (event2) => {
       invokeLifecycleMethod(
         "error",
-        event.detail.element,
-        event.detail.controller.element,
-        event.detail.reflexId,
-        event.detail.payload
+        event2.detail.element,
+        event2.detail.controller.element,
+        event2.detail.reflexId,
+        event2.detail.payload
       );
       dispatchLifecycleEvent(
         "after",
-        event.detail.element,
-        event.detail.controller.element,
-        event.detail.reflexId,
-        event.detail.payload
+        event2.detail.element,
+        event2.detail.controller.element,
+        event2.detail.reflexId,
+        event2.detail.payload
       );
     },
     true
   );
   document.addEventListener(
     "stimulus-reflex:halted",
-    (event) => invokeLifecycleMethod(
+    (event2) => invokeLifecycleMethod(
       "halted",
-      event.detail.element,
-      event.detail.controller.element,
-      event.detail.reflexId,
-      event.detail.payload
+      event2.detail.element,
+      event2.detail.controller.element,
+      event2.detail.reflexId,
+      event2.detail.payload
     ),
     true
   );
   document.addEventListener(
     "stimulus-reflex:after",
-    (event) => invokeLifecycleMethod(
+    (event2) => invokeLifecycleMethod(
       "after",
-      event.detail.element,
-      event.detail.controller.element,
-      event.detail.reflexId,
-      event.detail.payload
+      event2.detail.element,
+      event2.detail.controller.element,
+      event2.detail.reflexId,
+      event2.detail.payload
     ),
     true
   );
   document.addEventListener(
     "stimulus-reflex:finalize",
-    (event) => invokeLifecycleMethod(
+    (event2) => invokeLifecycleMethod(
       "finalize",
-      event.detail.element,
-      event.detail.controller.element,
-      event.detail.reflexId,
-      event.detail.payload
+      event2.detail.element,
+      event2.detail.controller.element,
+      event2.detail.reflexId,
+      event2.detail.payload
     ),
     true
   );
@@ -8893,8 +8893,8 @@
     }
     const { target } = controllerElement.reflexData[reflexId] || {};
     const controller = controllerElement.reflexController[reflexId] || {};
-    const event = `stimulus-reflex:${stage}`;
-    const action = `${event}:${target.split("#")[1]}`;
+    const event2 = `stimulus-reflex:${stage}`;
+    const action = `${event2}:${target.split("#")[1]}`;
     const detail = {
       reflex: target,
       controller,
@@ -8903,10 +8903,10 @@
       payload
     };
     const options = { bubbles: true, cancelable: false, detail };
-    controllerElement.dispatchEvent(new CustomEvent(event, options));
+    controllerElement.dispatchEvent(new CustomEvent(event2, options));
     controllerElement.dispatchEvent(new CustomEvent(action, options));
     if (window.jQuery) {
-      window.jQuery(controllerElement).trigger(event, detail);
+      window.jQuery(controllerElement).trigger(event2, detail);
       window.jQuery(controllerElement).trigger(action, detail);
     }
   };
@@ -8925,8 +8925,8 @@
       controllerElement
     });
   };
-  var success = (event, halted2) => {
-    const { detail } = event || {};
+  var success = (event2, halted2) => {
+    const { detail } = event2 || {};
     const { selector, payload } = detail || {};
     const { reflexId, target, morph } = detail.stimulusReflex || {};
     const reflex = reflexes_default[reflexId];
@@ -8934,21 +8934,21 @@
       return;
     const progress = reflex.totalOperations > 1 ? ` ${reflex.completedOperations}/${reflex.totalOperations}` : "";
     const duration = reflex.timestamp ? `in ${new Date() - reflex.timestamp}ms` : "CLONED";
-    const operation = event.type.split(":")[1].split("-").slice(1).join("_");
+    const operation = event2.type.split(":")[1].split("-").slice(1).join("_");
     console.log(
       `\u2193 reflex \u2193 ${target} \u2192 ${selector || "\u221E"}${progress} ${duration}`,
       { reflexId, morph, operation, halted: halted2, payload }
     );
   };
-  var error2 = (event) => {
-    const { detail } = event || {};
+  var error2 = (event2) => {
+    const { detail } = event2 || {};
     const { reflexId, target, payload } = detail.stimulusReflex || {};
     const reflex = reflexes_default[reflexId];
     if (debug_default.disabled || reflex.promise.data.suppressLogging)
       return;
     const duration = reflex.timestamp ? `in ${new Date() - reflex.timestamp}ms` : "CLONED";
     console.log(
-      `\u2193 reflex \u2193 ${target} ${duration} %cERROR: ${event.detail.body}`,
+      `\u2193 reflex \u2193 ${target} ${duration} %cERROR: ${event2.detail.body}`,
       "color: #f00;",
       { reflexId, payload }
     );
@@ -8956,8 +8956,8 @@
   var log_default = { request, success, error: error2 };
 
   // ../../node_modules/stimulus_reflex/javascript/callbacks.js
-  var beforeDOMUpdate = (event) => {
-    const { stimulusReflex, payload } = event.detail || {};
+  var beforeDOMUpdate = (event2) => {
+    const { stimulusReflex, payload } = event2.detail || {};
     if (!stimulusReflex)
       return;
     const { reflexId, xpathElement, xpathController } = stimulusReflex;
@@ -8972,7 +8972,7 @@
       setTimeout(
         () => promise.resolve({
           element: reflexElement,
-          event,
+          event: event2,
           data: promise.data,
           payload,
           reflexId,
@@ -8989,8 +8989,8 @@
       )
     );
   };
-  var afterDOMUpdate = (event) => {
-    const { stimulusReflex, payload } = event.detail || {};
+  var afterDOMUpdate = (event2) => {
+    const { stimulusReflex, payload } = event2.detail || {};
     if (!stimulusReflex)
       return;
     const { reflexId, xpathElement, xpathController } = stimulusReflex;
@@ -8999,14 +8999,14 @@
     const reflex = reflexes_default[reflexId];
     const { promise } = reflex;
     reflex.completedOperations++;
-    log_default.success(event, false);
+    log_default.success(event2, false);
     if (reflex.completedOperations < reflex.totalOperations)
       return;
     if (stimulusReflex.resolveLate)
       setTimeout(
         () => promise.resolve({
           element: reflexElement,
-          event,
+          event: event2,
           data: promise.data,
           payload,
           reflexId,
@@ -9025,8 +9025,8 @@
     if (reflex.piggybackOperations.length)
       javascript_default.perform(reflex.piggybackOperations);
   };
-  var routeReflexEvent = (event) => {
-    const { stimulusReflex, payload, name, body } = event.detail || {};
+  var routeReflexEvent = (event2) => {
+    const { stimulusReflex, payload, name, body } = event2.detail || {};
     const eventType = name.split("-")[2];
     if (!stimulusReflex || !["nothing", "halted", "error"].includes(eventType))
       return;
@@ -9042,13 +9042,13 @@
     }
     switch (eventType) {
       case "nothing":
-        nothing(event, payload, promise, reflex, reflexElement);
+        nothing(event2, payload, promise, reflex, reflexElement);
         break;
       case "error":
-        error3(event, payload, promise, reflex, reflexElement);
+        error3(event2, payload, promise, reflex, reflexElement);
         break;
       case "halted":
-        halted(event, payload, promise, reflex, reflexElement);
+        halted(event2, payload, promise, reflex, reflexElement);
         break;
     }
     setTimeout(
@@ -9063,46 +9063,46 @@
     if (reflex.piggybackOperations.length)
       javascript_default.perform(reflex.piggybackOperations);
   };
-  var nothing = (event, payload, promise, reflex, reflexElement) => {
+  var nothing = (event2, payload, promise, reflex, reflexElement) => {
     reflex.finalStage = "after";
-    log_default.success(event, false);
+    log_default.success(event2, false);
     setTimeout(
       () => promise.resolve({
         data: promise.data,
         element: reflexElement,
-        event,
+        event: event2,
         payload,
         reflexId: promise.data.reflexId,
         toString: () => ""
       })
     );
   };
-  var halted = (event, payload, promise, reflex, reflexElement) => {
+  var halted = (event2, payload, promise, reflex, reflexElement) => {
     reflex.finalStage = "halted";
-    log_default.success(event, true);
+    log_default.success(event2, true);
     setTimeout(
       () => promise.resolve({
         data: promise.data,
         element: reflexElement,
-        event,
+        event: event2,
         payload,
         reflexId: promise.data.reflexId,
         toString: () => ""
       })
     );
   };
-  var error3 = (event, payload, promise, reflex, reflexElement) => {
+  var error3 = (event2, payload, promise, reflex, reflexElement) => {
     reflex.finalStage = "after";
-    log_default.error(event);
+    log_default.error(event2);
     setTimeout(
       () => promise.reject({
         data: promise.data,
         element: reflexElement,
-        event,
+        event: event2,
         payload,
         reflexId: promise.data.reflexId,
-        error: event.detail.body,
-        toString: () => event.detail.body
+        error: event2.detail.body,
+        toString: () => event2.detail.body
       })
     );
   };
@@ -9414,11 +9414,11 @@
   };
   Connection2.reopenDelay = 500;
   Connection2.prototype.events = {
-    message(event) {
+    message(event2) {
       if (!this.isProtocolSupported()) {
         return;
       }
-      const { identifier, message, reason, reconnect, type } = JSON.parse(event.data);
+      const { identifier, message, reason, reconnect, type } = JSON.parse(event2.data);
       switch (type) {
         case message_types2.welcome:
           this.monitor.recordConnect();
@@ -9449,7 +9449,7 @@
         });
       }
     },
-    close(event) {
+    close(event2) {
       logger.log("WebSocket onclose event");
       if (this.disconnected) {
         return;
@@ -9855,8 +9855,8 @@ Please set ${schema_default.reflexSerializeForm}="true" on your Reflex Controlle
         );
         return promise;
       },
-      __perform(event) {
-        let element = event.target;
+      __perform(event2) {
+        let element = event2.target;
         let reflex;
         while (element && !reflex) {
           reflex = element.getAttribute(schema_default.reflex);
@@ -9864,11 +9864,11 @@ Please set ${schema_default.reflexSerializeForm}="true" on your Reflex Controlle
             element = element.parentElement;
         }
         const match = attributeValues(reflex).find(
-          (reflex2) => reflex2.split("->")[0] === event.type
+          (reflex2) => reflex2.split("->")[0] === event2.type
         );
         if (match) {
-          event.preventDefault();
-          event.stopPropagation();
+          event2.preventDefault();
+          event2.stopPropagation();
           this.stimulate(match.split("->")[1], element);
         }
       }
@@ -10071,11 +10071,11 @@ Please set ${schema_default.reflexSerializeForm}="true" on your Reflex Controlle
     capture: false,
     passive: false
   };
-  function on(el, event, fn2) {
-    el.addEventListener(event, fn2, !IE11OrLess && captureMode);
+  function on(el, event2, fn2) {
+    el.addEventListener(event2, fn2, !IE11OrLess && captureMode);
   }
-  function off(el, event, fn2) {
-    el.removeEventListener(event, fn2, !IE11OrLess && captureMode);
+  function off(el, event2, fn2) {
+    el.removeEventListener(event2, fn2, !IE11OrLess && captureMode);
   }
   function matches(el, selector) {
     if (!selector)
@@ -10789,16 +10789,16 @@ Please set ${schema_default.reflexSerializeForm}="true" on your Reflex Controlle
       evt = evt.touches ? evt.touches[0] : evt;
       var nearest = _detectNearestEmptySortable(evt.clientX, evt.clientY);
       if (nearest) {
-        var event = {};
+        var event2 = {};
         for (var i2 in evt) {
           if (evt.hasOwnProperty(i2)) {
-            event[i2] = evt[i2];
+            event2[i2] = evt[i2];
           }
         }
-        event.target = event.rootEl = nearest;
-        event.preventDefault = void 0;
-        event.stopPropagation = void 0;
-        nearest[expando]._onDragOver(event);
+        event2.target = event2.rootEl = nearest;
+        event2.preventDefault = void 0;
+        event2.stopPropagation = void 0;
+        nearest[expando]._onDragOver(event2);
       }
     }
   };
@@ -12144,11 +12144,11 @@ Please set ${schema_default.reflexSerializeForm}="true" on your Reflex Controlle
         onEnd: this.end.bind(this)
       });
     }
-    end(event) {
-      const id2 = event.item.dataset.id;
+    end(event2) {
+      const id2 = event2.item.dataset.id;
       const url2 = this.urlValue.replace(":id", id2);
       const formData = new FormData();
-      formData.append(this.attributeValue, event.to.dataset.newValue);
+      formData.append(this.attributeValue, event2.to.dataset.newValue);
       window.mrujs.fetch(url2, {
         method: "PATCH",
         body: formData
@@ -12161,6 +12161,36 @@ Please set ${schema_default.reflexSerializeForm}="true" on your Reflex Controlle
     url: String,
     attribute: String
   });
+
+  // controllers/dropdown_controller.js
+  var dropdown_controller_default = class extends Controller2 {
+    connect() {
+      this.open = false;
+    }
+    toggle() {
+      if (this.open) {
+        this._hide();
+      } else {
+        this.show();
+      }
+    }
+    show() {
+      this.open = true;
+      this.contentTarget.classList.add("open");
+      this.element.setAttribute("aria-expanded", "true");
+    }
+    _hide() {
+      this.open = false;
+      this.contentTarget.classList.remove("open");
+      this.element.setAttribute("aria-expanded", "false");
+    }
+    hide() {
+      if (this.element.contains(event.target) === false && this.open) {
+        this._hide();
+      }
+    }
+  };
+  __publicField(dropdown_controller_default, "targets", ["content"]);
 
   // controllers/form_controller.js
   var import_debounce = __toESM(require_debounce());
@@ -12226,6 +12256,7 @@ Please set ${schema_default.reflexSerializeForm}="true" on your Reflex Controlle
   // controllers/index.js
   application.register("alert", alert_controller_default);
   application.register("drag", drag_controller_default);
+  application.register("dropdown", dropdown_controller_default);
   application.register("form", form_controller_default);
   application.register("hello", hello_controller_default);
   application.register("slideover", slideover_controller_default);
@@ -12243,8 +12274,8 @@ Please set ${schema_default.reflexSerializeForm}="true" on your Reflex Controlle
     }
     return null;
   }
-  function clickCaptured2(event) {
-    const submitter = findSubmitterFromClickTarget2(event.target);
+  function clickCaptured2(event2) {
+    const submitter = findSubmitterFromClickTarget2(event2.target);
     if ((submitter === null || submitter === void 0 ? void 0 : submitter.form) != null) {
       submittersByForm2.set(submitter.form, submitter);
     }
@@ -12319,12 +12350,12 @@ Please set ${schema_default.reflexSerializeForm}="true" on your Reflex Controlle
   };
   function addListeners(conditions, callbacks) {
     conditions.forEach((condition) => {
-      const { selectors, event } = condition;
+      const { selectors, event: event2 } = condition;
       const selectorString = selectors.map(selectorToString).join(", ");
       $$1(selectorString).forEach((el) => {
         selectors.forEach((selector) => {
           if (matches$1(el, selector)) {
-            callbacks.forEach((callback) => el.addEventListener(event, callback));
+            callbacks.forEach((callback) => el.addEventListener(event2, callback));
           }
         });
       });
@@ -12332,12 +12363,12 @@ Please set ${schema_default.reflexSerializeForm}="true" on your Reflex Controlle
   }
   function removeListeners(conditions, callbacks) {
     conditions.forEach((condition) => {
-      const { selectors, event } = condition;
+      const { selectors, event: event2 } = condition;
       const selectorString = selectors.map(selectorToString).join(", ");
       $$1(selectorString).forEach((el) => {
         selectors.forEach((selector) => {
           if (matches$1(el, selector)) {
-            callbacks.forEach((callback) => el.removeEventListener(event, callback));
+            callbacks.forEach((callback) => el.removeEventListener(event2, callback));
           }
         });
       });
@@ -12382,20 +12413,20 @@ Please set ${schema_default.reflexSerializeForm}="true" on your Reflex Controlle
     cancelable: true
   };
   function dispatch3(name, options = {}) {
-    const event = new CustomEvent(name, { ...EVENT_DEFAULTS, ...options });
-    this.dispatchEvent(event);
-    return event;
+    const event2 = new CustomEvent(name, { ...EVENT_DEFAULTS, ...options });
+    this.dispatchEvent(event2);
+    return event2;
   }
   function fire$1(element, name, options = {}) {
-    const event = dispatch3.call(element, name, options);
-    return !event.defaultPrevented;
+    const event2 = dispatch3.call(element, name, options);
+    return !event2.defaultPrevented;
   }
-  function stopEverything$1(event) {
-    if (event.target != null)
-      fire$1(event.target, "ujs:everythingStopped");
-    event.stopPropagation();
-    event.stopImmediatePropagation();
-    event.preventDefault();
+  function stopEverything$1(event2) {
+    if (event2.target != null)
+      fire$1(event2.target, "ujs:everythingStopped");
+    event2.stopPropagation();
+    event2.stopImmediatePropagation();
+    event2.preventDefault();
   }
   var prefix = "ajax";
   var AJAX_EVENTS = {
@@ -12411,23 +12442,23 @@ Please set ${schema_default.reflexSerializeForm}="true" on your Reflex Controlle
     ajaxBeforeNavigation: `${prefix}:beforeNavigation`
   };
   function delegate$1(element, selector, eventType, handler) {
-    element.addEventListener(eventType, (event) => {
-      let target = event.target;
+    element.addEventListener(eventType, (event2) => {
+      let target = event2.target;
       while (!(!(target instanceof Element) || matches$1(target, selector))) {
         target = target.parentNode;
       }
-      if (target instanceof Element && handler.call(target, event) === false) {
-        event.preventDefault();
-        event.stopPropagation();
+      if (target instanceof Element && handler.call(target, event2) === false) {
+        event2.preventDefault();
+        event2.stopPropagation();
       }
     });
   }
-  function findSubmitter(event) {
+  function findSubmitter(event2) {
     var _a2;
-    if (event.submitter instanceof HTMLElement) {
-      return event.submitter;
+    if (event2.submitter instanceof HTMLElement) {
+      return event2.submitter;
     }
-    return (_a2 = event.detail) === null || _a2 === void 0 ? void 0 : _a2.submitter;
+    return (_a2 = event2.detail) === null || _a2 === void 0 ? void 0 : _a2.submitter;
   }
   function expandUrl(locateable) {
     return new URL(locateable.toString(), document.baseURI);
@@ -12563,16 +12594,16 @@ Please set ${schema_default.reflexSerializeForm}="true" on your Reflex Controlle
       return responseType;
     return `${responseType}, */*; q=0.01`;
   }
-  function isInsignificantClick(event) {
-    return event.target != null && event.target.isContentEditable || event.defaultPrevented || event.button > 0 || event.altKey || event.ctrlKey || event.metaKey || event.shiftKey;
+  function isInsignificantClick(event2) {
+    return event2.target != null && event2.target.isContentEditable || event2.defaultPrevented || event2.button > 0 || event2.altKey || event2.ctrlKey || event2.metaKey || event2.shiftKey;
   }
-  function isSignificantClick(event) {
-    return !isInsignificantClick(event);
+  function isSignificantClick(event2) {
+    return !isInsignificantClick(event2);
   }
-  function preventInsignificantClick$1(event) {
-    if (isSignificantClick(event))
+  function preventInsignificantClick$1(event2) {
+    if (isSignificantClick(event2))
       return;
-    stopEverything$1(event);
+    stopEverything$1(event2);
   }
   function getCookieValue2(cookieName) {
     if (cookieName != null) {
@@ -12682,13 +12713,13 @@ Please set ${schema_default.reflexSerializeForm}="true" on your Reflex Controlle
       });
       return headers2;
     }
-    function cancel(event) {
+    function cancel(event2) {
       abortController.abort();
-      if (event != null) {
-        stopEverything$1(event);
-        const { element } = event.detail;
+      if (event2 != null) {
+        stopEverything$1(event2);
+        const { element } = event2.detail;
         dispatch3.call(element, AJAX_EVENTS.ajaxStopped, {
-          detail: { ...event.detail }
+          detail: { ...event2.detail }
         });
       }
     }
@@ -12848,12 +12879,12 @@ Please set ${schema_default.reflexSerializeForm}="true" on your Reflex Controlle
       { event: "change", selectors: [inputChangeSelector2] }
     ];
   }
-  function disableElement$1(event) {
+  function disableElement$1(event2) {
     let element;
-    if (event instanceof Event) {
-      element = event.target;
+    if (event2 instanceof Event) {
+      element = event2.target;
     } else {
-      element = event;
+      element = event2;
     }
     if (element == null)
       return;
@@ -12911,12 +12942,12 @@ Please set ${schema_default.reflexSerializeForm}="true" on your Reflex Controlle
   function disconnect$2() {
     attachListeners("removeEventListener");
   }
-  function startFormSubmission(event) {
-    if (event.defaultPrevented) {
+  function startFormSubmission(event2) {
+    if (event2.defaultPrevented) {
       return;
     }
-    const element = findTarget(event);
-    const submitter = findSubmitter(event);
+    const element = findTarget(event2);
+    const submitter = findSubmitter(event2);
     if (element.dataset.remote !== "true")
       return;
     if (shouldNotSubmit(element))
@@ -12926,41 +12957,41 @@ Please set ${schema_default.reflexSerializeForm}="true" on your Reflex Controlle
     if (submitter != null) {
       disableElement$1(submitter);
     }
-    event.preventDefault();
+    event2.preventDefault();
     const { fetchRequest, request: request2 } = FormSubmission2(element, submitter);
     const detail = { element, fetchRequest, request: request2, submitter };
     dispatch3.call(element, AJAX_EVENTS.ajaxBefore, { detail });
   }
-  function startFetchRequest(event) {
-    const { element, fetchRequest, request: request2, submitter } = event.detail;
-    if (event.defaultPrevented || shouldNotSubmit(element) || shouldNotSubmit(submitter)) {
-      dispatchStopped(event);
+  function startFetchRequest(event2) {
+    const { element, fetchRequest, request: request2, submitter } = event2.detail;
+    if (event2.defaultPrevented || shouldNotSubmit(element) || shouldNotSubmit(submitter)) {
+      dispatchStopped(event2);
       return;
     }
     dispatch3.call(element, AJAX_EVENTS.ajaxBeforeSend, {
       detail: { element, fetchRequest, request: request2, submitter }
     });
   }
-  function sendFetchRequest(event) {
-    const { element, request: request2, submitter } = event.detail;
-    if (event.defaultPrevented || shouldNotSubmit(element) || shouldNotSubmit(submitter)) {
-      dispatchStopped(event);
+  function sendFetchRequest(event2) {
+    const { element, request: request2, submitter } = event2.detail;
+    if (event2.defaultPrevented || shouldNotSubmit(element) || shouldNotSubmit(submitter)) {
+      dispatchStopped(event2);
       return;
     }
-    dispatch3.call(element, AJAX_EVENTS.ajaxSend, { detail: { ...event.detail } });
+    dispatch3.call(element, AJAX_EVENTS.ajaxSend, { detail: { ...event2.detail } });
     window.fetch(request2).then((resp) => {
       const fetchResponse = FetchResponse$1(resp);
       const { response } = fetchResponse;
-      dispatchResponse({ ...event.detail, fetchResponse, response });
-    }).catch((error4) => dispatchRequestError({ ...event.detail, error: error4 }));
+      dispatchResponse({ ...event2.detail, fetchResponse, response });
+    }).catch((error4) => dispatchRequestError({ ...event2.detail, error: error4 }));
   }
-  function dispatchComplete(event) {
-    if (event.defaultPrevented) {
-      dispatchStopped(event);
+  function dispatchComplete(event2) {
+    if (event2.defaultPrevented) {
+      dispatchStopped(event2);
       return;
     }
-    dispatch3.call(findTarget(event), AJAX_EVENTS.ajaxComplete, {
-      detail: { ...event.detail }
+    dispatch3.call(findTarget(event2), AJAX_EVENTS.ajaxComplete, {
+      detail: { ...event2.detail }
     });
   }
   function dispatchResponse({ element, fetchRequest, request: request2, fetchResponse, response, submitter }) {
@@ -12980,18 +13011,18 @@ Please set ${schema_default.reflexSerializeForm}="true" on your Reflex Controlle
       detail: { element, fetchRequest, request: request2, error: error4, submitter }
     });
   }
-  function dispatchError(event) {
-    if (event.defaultPrevented) {
-      dispatchStopped(event);
+  function dispatchError(event2) {
+    if (event2.defaultPrevented) {
+      dispatchStopped(event2);
       return;
     }
-    dispatch3.call(findTarget(event), AJAX_EVENTS.ajaxError, {
-      detail: { ...event.detail }
+    dispatch3.call(findTarget(event2), AJAX_EVENTS.ajaxError, {
+      detail: { ...event2.detail }
     });
   }
-  function dispatchStopped(event) {
-    dispatch3.call(findTarget(event), AJAX_EVENTS.ajaxStopped, {
-      detail: { ...event.detail }
+  function dispatchStopped(event2) {
+    dispatch3.call(findTarget(event2), AJAX_EVENTS.ajaxStopped, {
+      detail: { ...event2.detail }
     });
   }
   function attachListeners(fn2) {
@@ -13003,8 +13034,8 @@ Please set ${schema_default.reflexSerializeForm}="true" on your Reflex Controlle
     document[fn2](AJAX_EVENTS.ajaxResponseError, dispatchError);
     document[fn2](AJAX_EVENTS.ajaxError, dispatchComplete);
   }
-  function findTarget(event) {
-    return event.target;
+  function findTarget(event2) {
+    return event2.target;
   }
   function shouldNotSubmit(element) {
     return (element === null || element === void 0 ? void 0 : element.dataset.ujsSubmit) === "false";
@@ -13111,15 +13142,15 @@ Please set ${schema_default.reflexSerializeForm}="true" on your Reflex Controlle
       callbacks
     };
   }
-  function handleConfirm$1(event) {
-    if (!allowAction(event)) {
-      stopEverything$1(event);
+  function handleConfirm$1(event2) {
+    if (!allowAction(event2)) {
+      stopEverything$1(event2);
     }
   }
-  function allowAction(event) {
-    if (event.currentTarget == null)
+  function allowAction(event2) {
+    if (event2.currentTarget == null)
       return true;
-    const element = event.currentTarget;
+    const element = event2.currentTarget;
     const message = element.dataset.confirm;
     if (message == null)
       return true;
@@ -13272,9 +13303,9 @@ Please set ${schema_default.reflexSerializeForm}="true" on your Reflex Controlle
       callbacks
     };
   }
-  function handleMethod$1(event) {
+  function handleMethod$1(event2) {
     var _a2;
-    const element = event.currentTarget;
+    const element = event2.currentTarget;
     if (element.dataset.remote === "false")
       return;
     if (element.dataset.method == null && element.dataset.remote !== "true")
@@ -13282,8 +13313,8 @@ Please set ${schema_default.reflexSerializeForm}="true" on your Reflex Controlle
     const href = (_a2 = element.getAttribute("href")) !== null && _a2 !== void 0 ? _a2 : element.dataset.url;
     if (href == null)
       return;
-    event.preventDefault();
-    const submitter = event.target;
+    event2.preventDefault();
+    const submitter = event2.target;
     const linkSubmission = MethodSubmission(element);
     const { fetchRequest, request: request2 } = linkSubmission;
     dispatch3.call(element, AJAX_EVENTS.ajaxBeforeSend, {
@@ -13340,10 +13371,10 @@ Please set ${schema_default.reflexSerializeForm}="true" on your Reflex Controlle
     document.removeEventListener("ajax:complete", beforeNavigation);
     document.removeEventListener("ajax:beforeNavigation", navigateViaEvent);
   }
-  function beforeNavigation(event) {
-    if (event.defaultPrevented)
+  function beforeNavigation(event2) {
+    if (event2.defaultPrevented)
       return;
-    dispatch3.call(event.detail.element, "ajax:beforeNavigation", { detail: { ...event.detail } });
+    dispatch3.call(event2.detail.element, "ajax:beforeNavigation", { detail: { ...event2.detail } });
   }
   function findAdapter() {
     if (useTurbolinks())
@@ -13384,10 +13415,10 @@ Please set ${schema_default.reflexSerializeForm}="true" on your Reflex Controlle
     const snapshotCache = findSnapshotCache(findAdapter());
     return (_a2 = snapshotCache === null || snapshotCache === void 0 ? void 0 : snapshotCache.has(expandedUrl)) !== null && _a2 !== void 0 ? _a2 : false;
   }
-  function navigateViaEvent(event) {
-    if (event.defaultPrevented)
+  function navigateViaEvent(event2) {
+    if (event2.defaultPrevented)
       return;
-    const { element, fetchResponse, fetchRequest } = event.detail;
+    const { element, fetchResponse, fetchRequest } = event2.detail;
     if (!shouldNavigate(element, fetchResponse))
       return;
     navigate(element, fetchRequest, fetchResponse);
@@ -13550,9 +13581,9 @@ Please set ${schema_default.reflexSerializeForm}="true" on your Reflex Controlle
       { event: "submit", selectors: [formSubmitSelector2] }
     ];
   }
-  function handleDisabledElement$1(event) {
+  function handleDisabledElement$1(event2) {
     if (this.disabled === true)
-      stopEverything$1(event);
+      stopEverything$1(event2);
   }
   function ElementEnabler() {
     const callbacks = [enableElement$1];
@@ -13841,13 +13872,13 @@ Please set ${schema_default.reflexSerializeForm}="true" on your Reflex Controlle
     disconnect() {
       document.removeEventListener("ajax:beforeNavigation", this.boundPerform);
     }
-    perform(event) {
-      const fetchResponse = event.detail.fetchResponse;
+    perform(event2) {
+      const fetchResponse = event2.detail.fetchResponse;
       if ((fetchResponse === null || fetchResponse === void 0 ? void 0 : fetchResponse.contentType) == null)
         return;
       if (!this.isCableReadyResponse(fetchResponse.contentType))
         return;
-      event.preventDefault();
+      event2.preventDefault();
       fetchResponse.json().then((response) => {
         this.cableReady.perform(response);
       }).catch((err) => {
@@ -19548,19 +19579,19 @@ Please set ${schema_default.reflexSerializeForm}="true" on your Reflex Controlle
           this.callback = callback;
           this.md5Buffer = new SparkMD52.ArrayBuffer();
           this.fileReader = new FileReader();
-          this.fileReader.addEventListener("load", (event) => this.fileReaderDidLoad(event));
-          this.fileReader.addEventListener("error", (event) => this.fileReaderDidError(event));
+          this.fileReader.addEventListener("load", (event2) => this.fileReaderDidLoad(event2));
+          this.fileReader.addEventListener("error", (event2) => this.fileReaderDidError(event2));
           this.readNextChunk();
         }
-        fileReaderDidLoad(event) {
-          this.md5Buffer.append(event.target.result);
+        fileReaderDidLoad(event2) {
+          this.md5Buffer.append(event2.target.result);
           if (!this.readNextChunk()) {
             const binaryDigest = this.md5Buffer.end(true);
             const base64digest = btoa(binaryDigest);
             this.callback(null, base64digest);
           }
         }
-        fileReaderDidError(event) {
+        fileReaderDidError(event2) {
           this.callback(`Error reading ${this.file.name}`);
         }
         readNextChunk() {
@@ -19600,16 +19631,16 @@ Please set ${schema_default.reflexSerializeForm}="true" on your Reflex Controlle
       function dispatchEvent4(element, type, eventInit = {}) {
         const { disabled } = element;
         const { bubbles, cancelable, detail } = eventInit;
-        const event = document.createEvent("Event");
-        event.initEvent(type, bubbles || true, cancelable || true);
-        event.detail = detail || {};
+        const event2 = document.createEvent("Event");
+        event2.initEvent(type, bubbles || true, cancelable || true);
+        event2.detail = detail || {};
         try {
           element.disabled = false;
-          element.dispatchEvent(event);
+          element.dispatchEvent(event2);
         } finally {
           element.disabled = disabled;
         }
-        return event;
+        return event2;
       }
       function toArray4(value) {
         if (Array.isArray(value)) {
@@ -19639,8 +19670,8 @@ Please set ${schema_default.reflexSerializeForm}="true" on your Reflex Controlle
           if (csrfToken2 != void 0) {
             this.xhr.setRequestHeader("X-CSRF-Token", csrfToken2);
           }
-          this.xhr.addEventListener("load", (event) => this.requestDidLoad(event));
-          this.xhr.addEventListener("error", (event) => this.requestDidError(event));
+          this.xhr.addEventListener("load", (event2) => this.requestDidLoad(event2));
+          this.xhr.addEventListener("error", (event2) => this.requestDidError(event2));
         }
         get status() {
           return this.xhr.status;
@@ -19659,7 +19690,7 @@ Please set ${schema_default.reflexSerializeForm}="true" on your Reflex Controlle
             blob: this.attributes
           }));
         }
-        requestDidLoad(event) {
+        requestDidLoad(event2) {
           if (this.status >= 200 && this.status < 300) {
             const { response } = this;
             const { direct_upload } = response;
@@ -19668,10 +19699,10 @@ Please set ${schema_default.reflexSerializeForm}="true" on your Reflex Controlle
             this.directUploadData = direct_upload;
             this.callback(null, this.toJSON());
           } else {
-            this.requestDidError(event);
+            this.requestDidError(event2);
           }
         }
-        requestDidError(event) {
+        requestDidError(event2) {
           this.callback(`Error creating Blob for "${this.file.name}". Status: ${this.status}`);
         }
         toJSON() {
@@ -19693,22 +19724,22 @@ Please set ${schema_default.reflexSerializeForm}="true" on your Reflex Controlle
           for (const key in headers) {
             this.xhr.setRequestHeader(key, headers[key]);
           }
-          this.xhr.addEventListener("load", (event) => this.requestDidLoad(event));
-          this.xhr.addEventListener("error", (event) => this.requestDidError(event));
+          this.xhr.addEventListener("load", (event2) => this.requestDidLoad(event2));
+          this.xhr.addEventListener("error", (event2) => this.requestDidError(event2));
         }
         create(callback) {
           this.callback = callback;
           this.xhr.send(this.file.slice());
         }
-        requestDidLoad(event) {
+        requestDidLoad(event2) {
           const { status, response } = this.xhr;
           if (status >= 200 && status < 300) {
             this.callback(null, response);
           } else {
-            this.requestDidError(event);
+            this.requestDidError(event2);
           }
         }
-        requestDidError(event) {
+        requestDidError(event2) {
           this.callback(`Error storing "${this.file.name}". Status: ${this.xhr.status}`);
         }
       }
@@ -19775,8 +19806,8 @@ Please set ${schema_default.reflexSerializeForm}="true" on your Reflex Controlle
             callback(error4);
           });
         }
-        uploadRequestDidProgress(event) {
-          const progress = event.loaded / event.total * 100;
+        uploadRequestDidProgress(event2) {
+          const progress = event2.loaded / event2.total * 100;
           if (progress) {
             this.dispatch("progress", {
               progress
@@ -19794,10 +19825,10 @@ Please set ${schema_default.reflexSerializeForm}="true" on your Reflex Controlle
           });
         }
         dispatchError(error4) {
-          const event = this.dispatch("error", {
+          const event2 = this.dispatch("error", {
             error: error4
           });
-          if (!event.defaultPrevented) {
+          if (!event2.defaultPrevented) {
             alert(error4);
           }
         }
@@ -19810,7 +19841,7 @@ Please set ${schema_default.reflexSerializeForm}="true" on your Reflex Controlle
           this.dispatch("before-storage-request", {
             xhr
           });
-          xhr.upload.addEventListener("progress", (event) => this.uploadRequestDidProgress(event));
+          xhr.upload.addEventListener("progress", (event2) => this.uploadRequestDidProgress(event2));
         }
       }
       const inputSelector2 = "input[type=file][data-direct-upload-url]:not([disabled])";
@@ -19867,30 +19898,30 @@ Please set ${schema_default.reflexSerializeForm}="true" on your Reflex Controlle
           document.addEventListener("ajax:before", didSubmitRemoteElement2);
         }
       }
-      function didClick2(event) {
-        const { target } = event;
+      function didClick2(event2) {
+        const { target } = event2;
         if ((target.tagName == "INPUT" || target.tagName == "BUTTON") && target.type == "submit" && target.form) {
           submitButtonsByForm2.set(target.form, target);
         }
       }
-      function didSubmitForm2(event) {
-        handleFormSubmissionEvent2(event);
+      function didSubmitForm2(event2) {
+        handleFormSubmissionEvent2(event2);
       }
-      function didSubmitRemoteElement2(event) {
-        if (event.target.tagName == "FORM") {
-          handleFormSubmissionEvent2(event);
+      function didSubmitRemoteElement2(event2) {
+        if (event2.target.tagName == "FORM") {
+          handleFormSubmissionEvent2(event2);
         }
       }
-      function handleFormSubmissionEvent2(event) {
-        const form2 = event.target;
+      function handleFormSubmissionEvent2(event2) {
+        const form2 = event2.target;
         if (form2.hasAttribute(processingAttribute2)) {
-          event.preventDefault();
+          event2.preventDefault();
           return;
         }
         const controller = new DirectUploadsController2(form2);
         const { inputs } = controller;
         if (inputs.length) {
-          event.preventDefault();
+          event2.preventDefault();
           form2.setAttribute(processingAttribute2, "");
           inputs.forEach(disable3);
           controller.start((error4) => {
@@ -19950,8 +19981,8 @@ Please set ${schema_default.reflexSerializeForm}="true" on your Reflex Controlle
       this.directUpload.create(this.directUploadDidComplete.bind(this));
     }
     directUploadWillStoreFileWithXHR(xhr) {
-      xhr.upload.addEventListener("progress", (event) => {
-        const progress = event.loaded / event.total * 100;
+      xhr.upload.addEventListener("progress", (event2) => {
+        const progress = event2.loaded / event2.total * 100;
         this.attachment.setUploadProgress(progress);
       });
     }
@@ -19974,8 +20005,8 @@ Please set ${schema_default.reflexSerializeForm}="true" on your Reflex Controlle
       return this.element.dataset.blobUrlTemplate;
     }
   };
-  addEventListener("trix-attachment-add", (event) => {
-    const { attachment, target } = event;
+  addEventListener("trix-attachment-add", (event2) => {
+    const { attachment, target } = event2;
     if (attachment.file) {
       const upload = new AttachmentUpload(attachment, target);
       upload.start();
@@ -20411,19 +20442,19 @@ Please set ${schema_default.reflexSerializeForm}="true" on your Reflex Controlle
       this.callback = callback;
       this.md5Buffer = new SparkMD5.ArrayBuffer();
       this.fileReader = new FileReader();
-      this.fileReader.addEventListener("load", (event) => this.fileReaderDidLoad(event));
-      this.fileReader.addEventListener("error", (event) => this.fileReaderDidError(event));
+      this.fileReader.addEventListener("load", (event2) => this.fileReaderDidLoad(event2));
+      this.fileReader.addEventListener("error", (event2) => this.fileReaderDidError(event2));
       this.readNextChunk();
     }
-    fileReaderDidLoad(event) {
-      this.md5Buffer.append(event.target.result);
+    fileReaderDidLoad(event2) {
+      this.md5Buffer.append(event2.target.result);
       if (!this.readNextChunk()) {
         const binaryDigest = this.md5Buffer.end(true);
         const base64digest = btoa(binaryDigest);
         this.callback(null, base64digest);
       }
     }
-    fileReaderDidError(event) {
+    fileReaderDidError(event2) {
       this.callback(`Error reading ${this.file.name}`);
     }
     readNextChunk() {
@@ -20463,16 +20494,16 @@ Please set ${schema_default.reflexSerializeForm}="true" on your Reflex Controlle
   function dispatchEvent3(element, type, eventInit = {}) {
     const { disabled } = element;
     const { bubbles, cancelable, detail } = eventInit;
-    const event = document.createEvent("Event");
-    event.initEvent(type, bubbles || true, cancelable || true);
-    event.detail = detail || {};
+    const event2 = document.createEvent("Event");
+    event2.initEvent(type, bubbles || true, cancelable || true);
+    event2.detail = detail || {};
     try {
       element.disabled = false;
-      element.dispatchEvent(event);
+      element.dispatchEvent(event2);
     } finally {
       element.disabled = disabled;
     }
-    return event;
+    return event2;
   }
   function toArray3(value) {
     if (Array.isArray(value)) {
@@ -20502,8 +20533,8 @@ Please set ${schema_default.reflexSerializeForm}="true" on your Reflex Controlle
       if (csrfToken2 != void 0) {
         this.xhr.setRequestHeader("X-CSRF-Token", csrfToken2);
       }
-      this.xhr.addEventListener("load", (event) => this.requestDidLoad(event));
-      this.xhr.addEventListener("error", (event) => this.requestDidError(event));
+      this.xhr.addEventListener("load", (event2) => this.requestDidLoad(event2));
+      this.xhr.addEventListener("error", (event2) => this.requestDidError(event2));
     }
     get status() {
       return this.xhr.status;
@@ -20522,7 +20553,7 @@ Please set ${schema_default.reflexSerializeForm}="true" on your Reflex Controlle
         blob: this.attributes
       }));
     }
-    requestDidLoad(event) {
+    requestDidLoad(event2) {
       if (this.status >= 200 && this.status < 300) {
         const { response } = this;
         const { direct_upload } = response;
@@ -20531,10 +20562,10 @@ Please set ${schema_default.reflexSerializeForm}="true" on your Reflex Controlle
         this.directUploadData = direct_upload;
         this.callback(null, this.toJSON());
       } else {
-        this.requestDidError(event);
+        this.requestDidError(event2);
       }
     }
-    requestDidError(event) {
+    requestDidError(event2) {
       this.callback(`Error creating Blob for "${this.file.name}". Status: ${this.status}`);
     }
     toJSON() {
@@ -20556,22 +20587,22 @@ Please set ${schema_default.reflexSerializeForm}="true" on your Reflex Controlle
       for (const key in headers) {
         this.xhr.setRequestHeader(key, headers[key]);
       }
-      this.xhr.addEventListener("load", (event) => this.requestDidLoad(event));
-      this.xhr.addEventListener("error", (event) => this.requestDidError(event));
+      this.xhr.addEventListener("load", (event2) => this.requestDidLoad(event2));
+      this.xhr.addEventListener("error", (event2) => this.requestDidError(event2));
     }
     create(callback) {
       this.callback = callback;
       this.xhr.send(this.file.slice());
     }
-    requestDidLoad(event) {
+    requestDidLoad(event2) {
       const { status, response } = this.xhr;
       if (status >= 200 && status < 300) {
         this.callback(null, response);
       } else {
-        this.requestDidError(event);
+        this.requestDidError(event2);
       }
     }
-    requestDidError(event) {
+    requestDidError(event2) {
       this.callback(`Error storing "${this.file.name}". Status: ${this.xhr.status}`);
     }
   };
@@ -20638,8 +20669,8 @@ Please set ${schema_default.reflexSerializeForm}="true" on your Reflex Controlle
         callback(error4);
       });
     }
-    uploadRequestDidProgress(event) {
-      const progress = event.loaded / event.total * 100;
+    uploadRequestDidProgress(event2) {
+      const progress = event2.loaded / event2.total * 100;
       if (progress) {
         this.dispatch("progress", {
           progress
@@ -20657,10 +20688,10 @@ Please set ${schema_default.reflexSerializeForm}="true" on your Reflex Controlle
       });
     }
     dispatchError(error4) {
-      const event = this.dispatch("error", {
+      const event2 = this.dispatch("error", {
         error: error4
       });
-      if (!event.defaultPrevented) {
+      if (!event2.defaultPrevented) {
         alert(error4);
       }
     }
@@ -20673,7 +20704,7 @@ Please set ${schema_default.reflexSerializeForm}="true" on your Reflex Controlle
       this.dispatch("before-storage-request", {
         xhr
       });
-      xhr.upload.addEventListener("progress", (event) => this.uploadRequestDidProgress(event));
+      xhr.upload.addEventListener("progress", (event2) => this.uploadRequestDidProgress(event2));
     }
   };
   var inputSelector = "input[type=file][data-direct-upload-url]:not([disabled])";
@@ -20730,30 +20761,30 @@ Please set ${schema_default.reflexSerializeForm}="true" on your Reflex Controlle
       document.addEventListener("ajax:before", didSubmitRemoteElement);
     }
   }
-  function didClick(event) {
-    const { target } = event;
+  function didClick(event2) {
+    const { target } = event2;
     if ((target.tagName == "INPUT" || target.tagName == "BUTTON") && target.type == "submit" && target.form) {
       submitButtonsByForm.set(target.form, target);
     }
   }
-  function didSubmitForm(event) {
-    handleFormSubmissionEvent(event);
+  function didSubmitForm(event2) {
+    handleFormSubmissionEvent(event2);
   }
-  function didSubmitRemoteElement(event) {
-    if (event.target.tagName == "FORM") {
-      handleFormSubmissionEvent(event);
+  function didSubmitRemoteElement(event2) {
+    if (event2.target.tagName == "FORM") {
+      handleFormSubmissionEvent(event2);
     }
   }
-  function handleFormSubmissionEvent(event) {
-    const form2 = event.target;
+  function handleFormSubmissionEvent(event2) {
+    const form2 = event2.target;
     if (form2.hasAttribute(processingAttribute)) {
-      event.preventDefault();
+      event2.preventDefault();
       return;
     }
     const controller = new DirectUploadsController(form2);
     const { inputs } = controller;
     if (inputs.length) {
-      event.preventDefault();
+      event2.preventDefault();
       form2.setAttribute(processingAttribute, "");
       inputs.forEach(disable2);
       controller.start((error4) => {
