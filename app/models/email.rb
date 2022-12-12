@@ -18,9 +18,9 @@ class Email < ApplicationRecord
 
   def create_notification
     InboundEmailNotification.create(
-      user: user,
+      user: User.first,
       params: {
-        applicant: applicant,
+        applicant: Applicant.first,
         email: self
       }
     )

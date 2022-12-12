@@ -32,4 +32,6 @@ Rails.application.routes.draw do
     get :resume, action: :show, controller: 'resumes'
     resources :email_replies, only: %i[new]
   end
+
+  resources :notifications, only: %i[index]
 end

@@ -6,4 +6,8 @@ class Notification < ApplicationRecord
   scope :unread, -> { where(read_at: nil) }
 
   serialize :params
+
+  def to_partial_path
+    'notifications/notification'
+  end
 end
