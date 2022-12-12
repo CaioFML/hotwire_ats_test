@@ -6,6 +6,7 @@ class User < ApplicationRecord
 
   belongs_to :account
   has_many :emails, dependent: :destroy
+  has_many :notifications, dependent: :destroy
 
   accepts_nested_attributes_for :account
 

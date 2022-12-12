@@ -6,13 +6,25 @@ class Email < ApplicationRecord
 
   validates_presence_of :subject
 
-  after_create_commit :send_email, if: :outbound?
-  after_create_commit :broadcast_to_applicant
 
   enum email_type: {
     outbound: 'outbound',
     inbound: 'inbound'
   }
+
+  after_create_commit :send_email, if: :outbound?
+  after_create_commit :broadcast_to_applicant
+  after_create_commit :create_notification, if: :inbound?
+
+  def create_notification
+    InboundEmailNotification.create(
+      user: user,
+      params: {
+        applicant: applicant,
+        email: self
+      }
+    )
+  end
 
   def send_email
     ApplicantMailer.contact(email: self).deliver_later
