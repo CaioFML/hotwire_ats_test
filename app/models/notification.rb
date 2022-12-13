@@ -9,6 +9,10 @@ class Notification < ApplicationRecord
 
   after_create_commit :update_users
 
+  def read!
+    update_column(:read_at, Time.current)
+  end
+
   def update_users
     broadcast_replace_later_to(
       user,

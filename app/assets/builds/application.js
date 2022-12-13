@@ -9952,6 +9952,25 @@ Please set ${schema_default.reflexSerializeForm}="true" on your Reflex Controlle
     }
   });
 
+  // controllers/application_controller.js
+  var application_controller_default = class extends Controller2 {
+    connect() {
+      stimulus_reflex_default.register(this);
+    }
+    beforeReflex(element, reflex, noop2, reflexId) {
+    }
+    reflexSuccess(element, reflex, noop2, reflexId) {
+    }
+    reflexError(element, reflex, error4, reflexId) {
+    }
+    reflexHalted(element, reflex, error4, reflexId) {
+    }
+    afterReflex(element, reflex, noop2, reflexId) {
+    }
+    finalizeReflex(element, reflex, noop2, reflexId) {
+    }
+  };
+
   // ../../node_modules/sortablejs/modular/sortable.esm.js
   function ownKeys(object, enumerableOnly) {
     var keys = Object.keys(object);
@@ -12211,6 +12230,22 @@ Please set ${schema_default.reflexSerializeForm}="true" on your Reflex Controlle
     }
   };
 
+  // controllers/notifications_controller.js
+  var notifications_controller_default = class extends application_controller_default {
+    connect() {
+      super.connect();
+    }
+    read() {
+      this.stimulate("Notifications#read", this.element);
+    }
+    beforeRead(element) {
+      element.classList.add("opacity-0");
+      setTimeout(() => {
+        element.remove();
+      }, 150);
+    }
+  };
+
   // controllers/slideover_controller.js
   var slideover_controller_default = class extends Controller2 {
     connect() {
@@ -12255,10 +12290,12 @@ Please set ${schema_default.reflexSerializeForm}="true" on your Reflex Controlle
 
   // controllers/index.js
   application.register("alert", alert_controller_default);
+  application.register("application", application_controller_default);
   application.register("drag", drag_controller_default);
   application.register("dropdown", dropdown_controller_default);
   application.register("form", form_controller_default);
   application.register("hello", hello_controller_default);
+  application.register("notifications", notifications_controller_default);
   application.register("slideover", slideover_controller_default);
 
   // channels/consumer.js
